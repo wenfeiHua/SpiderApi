@@ -5,6 +5,9 @@
     <id column="id" property="id" jdbcType="INTEGER" />
     <result column="bankName" property="bankname" jdbcType="VARCHAR" />
     <result column="bankURL" property="bankurl" jdbcType="VARCHAR" />
+    <result column="createTime" property="createtime" jdbcType="TIMESTAMP" />
+    <result column="updateTime" property="updatetime" jdbcType="TIMESTAMP" />
+    <result column="isDelete" property="isdelete" jdbcType="BIT" />
   </resultMap>
   <sql id="Example_Where_Clause" >
     <where >
@@ -65,7 +68,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List" >
-    id, bankName, bankURL
+    id, bankName, bankURL, createTime, updateTime, isDelete
   </sql>
   <select id="selectByExample" resultMap="BaseResultMap" parameterType="spider.api.mybatis.model.BankInfoExample" >
     select
@@ -98,9 +101,11 @@
     </if>
   </delete>
   <insert id="insert" parameterType="spider.api.mybatis.model.BankInfo" >
-    insert into bank_info (id, bankName, bankURL
+    insert into bank_info (id, bankName, bankURL, 
+      createTime, updateTime, isDelete
       )
-    values (#{id,jdbcType=INTEGER}, #{bankname,jdbcType=VARCHAR}, #{bankurl,jdbcType=VARCHAR}
+    values (#{id,jdbcType=INTEGER}, #{bankname,jdbcType=VARCHAR}, #{bankurl,jdbcType=VARCHAR}, 
+      #{createtime,jdbcType=TIMESTAMP}, #{updatetime,jdbcType=TIMESTAMP}, #{isdelete,jdbcType=BIT}
       )
   </insert>
   <insert id="insertSelective" parameterType="spider.api.mybatis.model.BankInfo" >
@@ -115,6 +120,15 @@
       <if test="bankurl != null" >
         bankURL,
       </if>
+      <if test="createtime != null" >
+        createTime,
+      </if>
+      <if test="updatetime != null" >
+        updateTime,
+      </if>
+      <if test="isdelete != null" >
+        isDelete,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -125,6 +139,15 @@
       </if>
       <if test="bankurl != null" >
         #{bankurl,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null" >
+        #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatetime != null" >
+        #{updatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isdelete != null" >
+        #{isdelete,jdbcType=BIT},
       </if>
     </trim>
   </insert>
@@ -146,6 +169,15 @@
       <if test="record.bankurl != null" >
         bankURL = #{record.bankurl,jdbcType=VARCHAR},
       </if>
+      <if test="record.createtime != null" >
+        createTime = #{record.createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updatetime != null" >
+        updateTime = #{record.updatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.isdelete != null" >
+        isDelete = #{record.isdelete,jdbcType=BIT},
+      </if>
     </set>
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
@@ -155,7 +187,10 @@
     update bank_info
     set id = #{record.id,jdbcType=INTEGER},
       bankName = #{record.bankname,jdbcType=VARCHAR},
-      bankURL = #{record.bankurl,jdbcType=VARCHAR}
+      bankURL = #{record.bankurl,jdbcType=VARCHAR},
+      createTime = #{record.createtime,jdbcType=TIMESTAMP},
+      updateTime = #{record.updatetime,jdbcType=TIMESTAMP},
+      isDelete = #{record.isdelete,jdbcType=BIT}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -169,13 +204,25 @@
       <if test="bankurl != null" >
         bankURL = #{bankurl,jdbcType=VARCHAR},
       </if>
+      <if test="createtime != null" >
+        createTime = #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatetime != null" >
+        updateTime = #{updatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isdelete != null" >
+        isDelete = #{isdelete,jdbcType=BIT},
+      </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
   <update id="updateByPrimaryKey" parameterType="spider.api.mybatis.model.BankInfo" >
     update bank_info
     set bankName = #{bankname,jdbcType=VARCHAR},
-      bankURL = #{bankurl,jdbcType=VARCHAR}
+      bankURL = #{bankurl,jdbcType=VARCHAR},
+      createTime = #{createtime,jdbcType=TIMESTAMP},
+      updateTime = #{updatetime,jdbcType=TIMESTAMP},
+      isDelete = #{isdelete,jdbcType=BIT}
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>
