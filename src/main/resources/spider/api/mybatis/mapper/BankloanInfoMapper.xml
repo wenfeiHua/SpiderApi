@@ -1,0 +1,353 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="spider.api.mybatis.mapper.BankloanInfoMapper" >
+  <resultMap id="BaseResultMap" type="spider.api.mybatis.model.BankloanInfo" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="bankName" property="bankname" jdbcType="VARCHAR" />
+    <result column="shortTerm" property="shortterm" jdbcType="INTEGER" />
+    <result column="shortTermQuota" property="shorttermquota" jdbcType="VARCHAR" />
+    <result column="shortTermLoan" property="shorttermloan" jdbcType="REAL" />
+    <result column="mediumTerm" property="mediumterm" jdbcType="INTEGER" />
+    <result column="mediumTermQuota" property="mediumtermquota" jdbcType="VARCHAR" />
+    <result column="mediumTermLoan" property="mediumtermloan" jdbcType="REAL" />
+    <result column="longTerm" property="longterm" jdbcType="INTEGER" />
+    <result column="longTermQuota" property="longtermquota" jdbcType="VARCHAR" />
+    <result column="longTermLoan" property="longtermloan" jdbcType="REAL" />
+    <result column="createTime" property="createtime" jdbcType="TIMESTAMP" />
+    <result column="updateTime" property="updatetime" jdbcType="TIMESTAMP" />
+    <result column="isDelete" property="isdelete" jdbcType="BIT" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, bankName, shortTerm, shortTermQuota, shortTermLoan, mediumTerm, mediumTermQuota, 
+    mediumTermLoan, longTerm, longTermQuota, longTermLoan, createTime, updateTime, isDelete
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="spider.api.mybatis.model.BankloanInfoExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from bankloan_info
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from bankloan_info
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from bankloan_info
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="spider.api.mybatis.model.BankloanInfoExample" >
+    delete from bankloan_info
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="spider.api.mybatis.model.BankloanInfo" >
+    insert into bankloan_info (id, bankName, shortTerm, 
+      shortTermQuota, shortTermLoan, mediumTerm, 
+      mediumTermQuota, mediumTermLoan, longTerm, 
+      longTermQuota, longTermLoan, createTime, 
+      updateTime, isDelete)
+    values (#{id,jdbcType=INTEGER}, #{bankname,jdbcType=VARCHAR}, #{shortterm,jdbcType=INTEGER}, 
+      #{shorttermquota,jdbcType=VARCHAR}, #{shorttermloan,jdbcType=REAL}, #{mediumterm,jdbcType=INTEGER}, 
+      #{mediumtermquota,jdbcType=VARCHAR}, #{mediumtermloan,jdbcType=REAL}, #{longterm,jdbcType=INTEGER}, 
+      #{longtermquota,jdbcType=VARCHAR}, #{longtermloan,jdbcType=REAL}, #{createtime,jdbcType=TIMESTAMP}, 
+      #{updatetime,jdbcType=TIMESTAMP}, #{isdelete,jdbcType=BIT})
+  </insert>
+  <insert id="insertSelective" parameterType="spider.api.mybatis.model.BankloanInfo" >
+    insert into bankloan_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="bankname != null" >
+        bankName,
+      </if>
+      <if test="shortterm != null" >
+        shortTerm,
+      </if>
+      <if test="shorttermquota != null" >
+        shortTermQuota,
+      </if>
+      <if test="shorttermloan != null" >
+        shortTermLoan,
+      </if>
+      <if test="mediumterm != null" >
+        mediumTerm,
+      </if>
+      <if test="mediumtermquota != null" >
+        mediumTermQuota,
+      </if>
+      <if test="mediumtermloan != null" >
+        mediumTermLoan,
+      </if>
+      <if test="longterm != null" >
+        longTerm,
+      </if>
+      <if test="longtermquota != null" >
+        longTermQuota,
+      </if>
+      <if test="longtermloan != null" >
+        longTermLoan,
+      </if>
+      <if test="createtime != null" >
+        createTime,
+      </if>
+      <if test="updatetime != null" >
+        updateTime,
+      </if>
+      <if test="isdelete != null" >
+        isDelete,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="bankname != null" >
+        #{bankname,jdbcType=VARCHAR},
+      </if>
+      <if test="shortterm != null" >
+        #{shortterm,jdbcType=INTEGER},
+      </if>
+      <if test="shorttermquota != null" >
+        #{shorttermquota,jdbcType=VARCHAR},
+      </if>
+      <if test="shorttermloan != null" >
+        #{shorttermloan,jdbcType=REAL},
+      </if>
+      <if test="mediumterm != null" >
+        #{mediumterm,jdbcType=INTEGER},
+      </if>
+      <if test="mediumtermquota != null" >
+        #{mediumtermquota,jdbcType=VARCHAR},
+      </if>
+      <if test="mediumtermloan != null" >
+        #{mediumtermloan,jdbcType=REAL},
+      </if>
+      <if test="longterm != null" >
+        #{longterm,jdbcType=INTEGER},
+      </if>
+      <if test="longtermquota != null" >
+        #{longtermquota,jdbcType=VARCHAR},
+      </if>
+      <if test="longtermloan != null" >
+        #{longtermloan,jdbcType=REAL},
+      </if>
+      <if test="createtime != null" >
+        #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatetime != null" >
+        #{updatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isdelete != null" >
+        #{isdelete,jdbcType=BIT},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="spider.api.mybatis.model.BankloanInfoExample" resultType="java.lang.Integer" >
+    select count(*) from bankloan_info
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update bankloan_info
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.bankname != null" >
+        bankName = #{record.bankname,jdbcType=VARCHAR},
+      </if>
+      <if test="record.shortterm != null" >
+        shortTerm = #{record.shortterm,jdbcType=INTEGER},
+      </if>
+      <if test="record.shorttermquota != null" >
+        shortTermQuota = #{record.shorttermquota,jdbcType=VARCHAR},
+      </if>
+      <if test="record.shorttermloan != null" >
+        shortTermLoan = #{record.shorttermloan,jdbcType=REAL},
+      </if>
+      <if test="record.mediumterm != null" >
+        mediumTerm = #{record.mediumterm,jdbcType=INTEGER},
+      </if>
+      <if test="record.mediumtermquota != null" >
+        mediumTermQuota = #{record.mediumtermquota,jdbcType=VARCHAR},
+      </if>
+      <if test="record.mediumtermloan != null" >
+        mediumTermLoan = #{record.mediumtermloan,jdbcType=REAL},
+      </if>
+      <if test="record.longterm != null" >
+        longTerm = #{record.longterm,jdbcType=INTEGER},
+      </if>
+      <if test="record.longtermquota != null" >
+        longTermQuota = #{record.longtermquota,jdbcType=VARCHAR},
+      </if>
+      <if test="record.longtermloan != null" >
+        longTermLoan = #{record.longtermloan,jdbcType=REAL},
+      </if>
+      <if test="record.createtime != null" >
+        createTime = #{record.createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updatetime != null" >
+        updateTime = #{record.updatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.isdelete != null" >
+        isDelete = #{record.isdelete,jdbcType=BIT},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update bankloan_info
+    set id = #{record.id,jdbcType=INTEGER},
+      bankName = #{record.bankname,jdbcType=VARCHAR},
+      shortTerm = #{record.shortterm,jdbcType=INTEGER},
+      shortTermQuota = #{record.shorttermquota,jdbcType=VARCHAR},
+      shortTermLoan = #{record.shorttermloan,jdbcType=REAL},
+      mediumTerm = #{record.mediumterm,jdbcType=INTEGER},
+      mediumTermQuota = #{record.mediumtermquota,jdbcType=VARCHAR},
+      mediumTermLoan = #{record.mediumtermloan,jdbcType=REAL},
+      longTerm = #{record.longterm,jdbcType=INTEGER},
+      longTermQuota = #{record.longtermquota,jdbcType=VARCHAR},
+      longTermLoan = #{record.longtermloan,jdbcType=REAL},
+      createTime = #{record.createtime,jdbcType=TIMESTAMP},
+      updateTime = #{record.updatetime,jdbcType=TIMESTAMP},
+      isDelete = #{record.isdelete,jdbcType=BIT}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="spider.api.mybatis.model.BankloanInfo" >
+    update bankloan_info
+    <set >
+      <if test="bankname != null" >
+        bankName = #{bankname,jdbcType=VARCHAR},
+      </if>
+      <if test="shortterm != null" >
+        shortTerm = #{shortterm,jdbcType=INTEGER},
+      </if>
+      <if test="shorttermquota != null" >
+        shortTermQuota = #{shorttermquota,jdbcType=VARCHAR},
+      </if>
+      <if test="shorttermloan != null" >
+        shortTermLoan = #{shorttermloan,jdbcType=REAL},
+      </if>
+      <if test="mediumterm != null" >
+        mediumTerm = #{mediumterm,jdbcType=INTEGER},
+      </if>
+      <if test="mediumtermquota != null" >
+        mediumTermQuota = #{mediumtermquota,jdbcType=VARCHAR},
+      </if>
+      <if test="mediumtermloan != null" >
+        mediumTermLoan = #{mediumtermloan,jdbcType=REAL},
+      </if>
+      <if test="longterm != null" >
+        longTerm = #{longterm,jdbcType=INTEGER},
+      </if>
+      <if test="longtermquota != null" >
+        longTermQuota = #{longtermquota,jdbcType=VARCHAR},
+      </if>
+      <if test="longtermloan != null" >
+        longTermLoan = #{longtermloan,jdbcType=REAL},
+      </if>
+      <if test="createtime != null" >
+        createTime = #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatetime != null" >
+        updateTime = #{updatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isdelete != null" >
+        isDelete = #{isdelete,jdbcType=BIT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="spider.api.mybatis.model.BankloanInfo" >
+    update bankloan_info
+    set bankName = #{bankname,jdbcType=VARCHAR},
+      shortTerm = #{shortterm,jdbcType=INTEGER},
+      shortTermQuota = #{shorttermquota,jdbcType=VARCHAR},
+      shortTermLoan = #{shorttermloan,jdbcType=REAL},
+      mediumTerm = #{mediumterm,jdbcType=INTEGER},
+      mediumTermQuota = #{mediumtermquota,jdbcType=VARCHAR},
+      mediumTermLoan = #{mediumtermloan,jdbcType=REAL},
+      longTerm = #{longterm,jdbcType=INTEGER},
+      longTermQuota = #{longtermquota,jdbcType=VARCHAR},
+      longTermLoan = #{longtermloan,jdbcType=REAL},
+      createTime = #{createtime,jdbcType=TIMESTAMP},
+      updateTime = #{updatetime,jdbcType=TIMESTAMP},
+      isDelete = #{isdelete,jdbcType=BIT}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

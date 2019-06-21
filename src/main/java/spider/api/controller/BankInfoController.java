@@ -6,11 +6,15 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import spider.api.ErrorMessage;
 import spider.api.model.ResultModel;
 import spider.api.mybatis.model.BankInfo;
+import spider.api.mybatis.model.BankloanInfo;
+import spider.api.mybatis.model.BanksavingsInfo;
+import spider.api.mybatis.model.FinancialInfo;
 import spider.api.service.BankInfoService;
 
 @RestController
@@ -40,6 +44,54 @@ public class BankInfoController {
 			model.setErrCode(ErrorMessage.ERROR_CODE001);
 			model.setErrDetail(ErrorMessage.ERROE_DETAIL001);
 		}
+		return model;
+	}
+
+	@RequestMapping(value = "/GetBankSavingsInfo", method = RequestMethod.GET)
+	public ResultModel getBankSavingsInfo(@RequestParam("bankname") String bankname){
+		ResultModel model = new ResultModel();
+		List<BanksavingsInfo> list = bankInfoService.getBankSavingsInfo(bankname);
+		if(list.size() > 0){
+			model.setResult(1);
+			model.setBaseModelList(list);
+		} else {
+			model.setResult(0);
+			model.setErrCode(ErrorMessage.ERROR_CODE001);
+			model.setErrDetail(ErrorMessage.ERROE_DETAIL001);
+		}
+
+		return model;
+	}
+
+	@RequestMapping(value = "/GetBankloanInfo", method = RequestMethod.GET)
+	public ResultModel getBankloanInfo(@RequestParam("bankname") String bankname){
+		ResultModel model = new ResultModel();
+		List<BankloanInfo> list = bankInfoService.getBankloanInfo(bankname);
+		if(list.size() > 0){
+			model.setResult(1);
+			model.setBaseModelList(list);
+		} else {
+			model.setResult(0);
+			model.setErrCode(ErrorMessage.ERROR_CODE001);
+			model.setErrDetail(ErrorMessage.ERROE_DETAIL001);
+		}
+
+		return model;
+	}
+
+	@RequestMapping(value = "/GetFinancialInfo", method = RequestMethod.GET)
+	public ResultModel getFinancialInfo(@RequestParam("bankname") String bankname){
+		ResultModel model = new ResultModel();
+		List<FinancialInfo> list = bankInfoService.getFinancialInfo(bankname);
+		if(list.size() > 0){
+			model.setResult(1);
+			model.setBaseModelList(list);
+		} else {
+			model.setResult(0);
+			model.setErrCode(ErrorMessage.ERROR_CODE001);
+			model.setErrDetail(ErrorMessage.ERROE_DETAIL001);
+		}
+
 		return model;
 	}
 }

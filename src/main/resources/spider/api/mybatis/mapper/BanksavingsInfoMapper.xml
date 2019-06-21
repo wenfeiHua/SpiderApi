@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="spider.api.mybatis.mapper.BanksavingsInfoMapper" >
+  <resultMap id="BaseResultMap" type="spider.api.mybatis.model.BanksavingsInfo" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="bankName" property="bankname" jdbcType="VARCHAR" />
+    <result column="demandDeposit" property="demanddeposit" jdbcType="REAL" />
+    <result column="threeMonths" property="threemonths" jdbcType="REAL" />
+    <result column="oneYear" property="oneyear" jdbcType="REAL" />
+    <result column="twoYears" property="twoyears" jdbcType="REAL" />
+    <result column="threeYears" property="threeyears" jdbcType="REAL" />
+    <result column="fiveYears" property="fiveyears" jdbcType="REAL" />
+    <result column="createTime" property="createtime" jdbcType="TIMESTAMP" />
+    <result column="updateTime" property="updatetime" jdbcType="TIMESTAMP" />
+    <result column="isDelete" property="isdelete" jdbcType="BIT" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, bankName, demandDeposit, threeMonths, oneYear, twoYears, threeYears, fiveYears, 
+    createTime, updateTime, isDelete
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="spider.api.mybatis.model.BanksavingsInfoExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from banksavings_info
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from banksavings_info
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from banksavings_info
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="spider.api.mybatis.model.BanksavingsInfoExample" >
+    delete from banksavings_info
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="spider.api.mybatis.model.BanksavingsInfo" >
+    insert into banksavings_info (id, bankName, demandDeposit, 
+      threeMonths, oneYear, twoYears, 
+      threeYears, fiveYears, createTime, 
+      updateTime, isDelete)
+    values (#{id,jdbcType=INTEGER}, #{bankname,jdbcType=VARCHAR}, #{demanddeposit,jdbcType=REAL}, 
+      #{threemonths,jdbcType=REAL}, #{oneyear,jdbcType=REAL}, #{twoyears,jdbcType=REAL}, 
+      #{threeyears,jdbcType=REAL}, #{fiveyears,jdbcType=REAL}, #{createtime,jdbcType=TIMESTAMP}, 
+      #{updatetime,jdbcType=TIMESTAMP}, #{isdelete,jdbcType=BIT})
+  </insert>
+  <insert id="insertSelective" parameterType="spider.api.mybatis.model.BanksavingsInfo" >
+    insert into banksavings_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="bankname != null" >
+        bankName,
+      </if>
+      <if test="demanddeposit != null" >
+        demandDeposit,
+      </if>
+      <if test="threemonths != null" >
+        threeMonths,
+      </if>
+      <if test="oneyear != null" >
+        oneYear,
+      </if>
+      <if test="twoyears != null" >
+        twoYears,
+      </if>
+      <if test="threeyears != null" >
+        threeYears,
+      </if>
+      <if test="fiveyears != null" >
+        fiveYears,
+      </if>
+      <if test="createtime != null" >
+        createTime,
+      </if>
+      <if test="updatetime != null" >
+        updateTime,
+      </if>
+      <if test="isdelete != null" >
+        isDelete,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="bankname != null" >
+        #{bankname,jdbcType=VARCHAR},
+      </if>
+      <if test="demanddeposit != null" >
+        #{demanddeposit,jdbcType=REAL},
+      </if>
+      <if test="threemonths != null" >
+        #{threemonths,jdbcType=REAL},
+      </if>
+      <if test="oneyear != null" >
+        #{oneyear,jdbcType=REAL},
+      </if>
+      <if test="twoyears != null" >
+        #{twoyears,jdbcType=REAL},
+      </if>
+      <if test="threeyears != null" >
+        #{threeyears,jdbcType=REAL},
+      </if>
+      <if test="fiveyears != null" >
+        #{fiveyears,jdbcType=REAL},
+      </if>
+      <if test="createtime != null" >
+        #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatetime != null" >
+        #{updatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isdelete != null" >
+        #{isdelete,jdbcType=BIT},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="spider.api.mybatis.model.BanksavingsInfoExample" resultType="java.lang.Integer" >
+    select count(*) from banksavings_info
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update banksavings_info
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.bankname != null" >
+        bankName = #{record.bankname,jdbcType=VARCHAR},
+      </if>
+      <if test="record.demanddeposit != null" >
+        demandDeposit = #{record.demanddeposit,jdbcType=REAL},
+      </if>
+      <if test="record.threemonths != null" >
+        threeMonths = #{record.threemonths,jdbcType=REAL},
+      </if>
+      <if test="record.oneyear != null" >
+        oneYear = #{record.oneyear,jdbcType=REAL},
+      </if>
+      <if test="record.twoyears != null" >
+        twoYears = #{record.twoyears,jdbcType=REAL},
+      </if>
+      <if test="record.threeyears != null" >
+        threeYears = #{record.threeyears,jdbcType=REAL},
+      </if>
+      <if test="record.fiveyears != null" >
+        fiveYears = #{record.fiveyears,jdbcType=REAL},
+      </if>
+      <if test="record.createtime != null" >
+        createTime = #{record.createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updatetime != null" >
+        updateTime = #{record.updatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.isdelete != null" >
+        isDelete = #{record.isdelete,jdbcType=BIT},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update banksavings_info
+    set id = #{record.id,jdbcType=INTEGER},
+      bankName = #{record.bankname,jdbcType=VARCHAR},
+      demandDeposit = #{record.demanddeposit,jdbcType=REAL},
+      threeMonths = #{record.threemonths,jdbcType=REAL},
+      oneYear = #{record.oneyear,jdbcType=REAL},
+      twoYears = #{record.twoyears,jdbcType=REAL},
+      threeYears = #{record.threeyears,jdbcType=REAL},
+      fiveYears = #{record.fiveyears,jdbcType=REAL},
+      createTime = #{record.createtime,jdbcType=TIMESTAMP},
+      updateTime = #{record.updatetime,jdbcType=TIMESTAMP},
+      isDelete = #{record.isdelete,jdbcType=BIT}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="spider.api.mybatis.model.BanksavingsInfo" >
+    update banksavings_info
+    <set >
+      <if test="bankname != null" >
+        bankName = #{bankname,jdbcType=VARCHAR},
+      </if>
+      <if test="demanddeposit != null" >
+        demandDeposit = #{demanddeposit,jdbcType=REAL},
+      </if>
+      <if test="threemonths != null" >
+        threeMonths = #{threemonths,jdbcType=REAL},
+      </if>
+      <if test="oneyear != null" >
+        oneYear = #{oneyear,jdbcType=REAL},
+      </if>
+      <if test="twoyears != null" >
+        twoYears = #{twoyears,jdbcType=REAL},
+      </if>
+      <if test="threeyears != null" >
+        threeYears = #{threeyears,jdbcType=REAL},
+      </if>
+      <if test="fiveyears != null" >
+        fiveYears = #{fiveyears,jdbcType=REAL},
+      </if>
+      <if test="createtime != null" >
+        createTime = #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatetime != null" >
+        updateTime = #{updatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isdelete != null" >
+        isDelete = #{isdelete,jdbcType=BIT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="spider.api.mybatis.model.BanksavingsInfo" >
+    update banksavings_info
+    set bankName = #{bankname,jdbcType=VARCHAR},
+      demandDeposit = #{demanddeposit,jdbcType=REAL},
+      threeMonths = #{threemonths,jdbcType=REAL},
+      oneYear = #{oneyear,jdbcType=REAL},
+      twoYears = #{twoyears,jdbcType=REAL},
+      threeYears = #{threeyears,jdbcType=REAL},
+      fiveYears = #{fiveyears,jdbcType=REAL},
+      createTime = #{createtime,jdbcType=TIMESTAMP},
+      updateTime = #{updatetime,jdbcType=TIMESTAMP},
+      isDelete = #{isdelete,jdbcType=BIT}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
