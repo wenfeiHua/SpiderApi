@@ -84,6 +84,7 @@ public class BankMessageServiceImpl implements BankMessageService{
 			connect.header("Accept-Language", "zh-CN,zh;q=0.9,ja;q=0.8,en-US;q=0.7,en;q=0.6");
 			connect.header("Cache-Control", "max-age=0");
 			connect.header("Connection", "keep-alive");
+			//--------------------------------------------cookie TODO------------------------------------------
 			connect.header("Cookie", "__jsluid=788dfba37b2fbbb8be557e4ed40467c3; __jsl_clearance=1561362901.476|0|05bYW%2BUW1C4UP283IKJeaLl2Aik%3D; td_cookie=18446744070226683091");
 			connect.header("Host", "www.cbrc.gov.cn");
 			connect.header("Referer", "http://www.cbrc.gov.cn/govView_F87A960A1077432192707EEA1CBC64AD.html");
@@ -143,21 +144,21 @@ public class BankMessageServiceImpl implements BankMessageService{
 							PDFTextStripperByArea stripper = new PDFTextStripperByArea();
 							stripper.setSortByPosition(true);
 							PDFTextStripper tStripper = new PDFTextStripper();
-							
 							String pdfFileInText = tStripper.getText(document);
-							
 							String[] lines = pdfFileInText.split("\\r?\\n");
 							int count = 0;
 							for(int i=0; i<lines.length; i++) {
 								String[] bankInfos = lines[i].split(" ");
-								String bankName = bankInfos[1].toString();
+								String bankName = "";
 								if(bankInfos.length > 4){
+									bankName = bankInfos[1].toString();
 									if(isSelectBank(bankInfos[bankInfos.length - 1])){
 										System.out.println(bankName);
 										count++;
 									}
 								} else {
 									if(isNumericzidai(bankInfos[0].toString())){
+										bankName = bankInfos[1].toString();
 										if (!isNumericzidai(lines[i+1].split(" ")[0].toString()) && isSelectBank(lines[i+1].split(" ")[lines[i+1].split(" ").length-1])) {
 											System.out.println(bankName);
 										} else if (!isNumericzidai(lines[i+2].split(" ")[0].toString()) && isSelectBank(lines[i+2].split(" ")[lines[i+2].split(" ").length-1])) {
@@ -171,10 +172,6 @@ public class BankMessageServiceImpl implements BankMessageService{
 								}
 							}
 							System.out.println(count);
-
-							if (document != null) {
-								document.close();
-							}
 						}
 					}
 				}
