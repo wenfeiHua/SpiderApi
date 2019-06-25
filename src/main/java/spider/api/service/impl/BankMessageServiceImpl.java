@@ -34,6 +34,7 @@ public class BankMessageServiceImpl implements BankMessageService{
 	private final String SERVER = "E://spider//wwwroot//pdffile";
 
 	private static final String URL_ADDRESS = "http://www.cbrc.gov.cn/govView_F87A960A1077432192707EEA1CBC64AD.html";
+
 	@Override
 	public int setBankList() {
 		int result = -1;
@@ -145,33 +146,54 @@ public class BankMessageServiceImpl implements BankMessageService{
 							stripper.setSortByPosition(true);
 							PDFTextStripper tStripper = new PDFTextStripper();
 							String pdfFileInText = tStripper.getText(document);
+							if(document != null){
+								document.close();
+							}
 							String[] lines = pdfFileInText.split("\\r?\\n");
 							int count = 0;
-							for(int i=0; i<lines.length; i++) {
+							for(int i=0; i<lines.length - 1; i++) {
 								String[] bankInfos = lines[i].split(" ");
 								String bankName = "";
 								if(bankInfos.length > 4){
 									bankName = bankInfos[1].toString();
 									if(isSelectBank(bankInfos[bankInfos.length - 1])){
 										System.out.println(bankName);
+										setBankInfo(bankName);
 										count++;
+										System.out.println(count);
 									}
 								} else {
 									if(isNumericzidai(bankInfos[0].toString())){
-										bankName = bankInfos[1].toString();
-										if (!isNumericzidai(lines[i+1].split(" ")[0].toString()) && isSelectBank(lines[i+1].split(" ")[lines[i+1].split(" ").length-1])) {
+										if (i<(lines.length-1) && !isNumericzidai(lines[i+1].split(" ")[0].toString()) && isSelectBank(lines[i+1].split(" ")[lines[i+1].split(" ").length-1])) {
+											bankName = bankInfos[1].toString();
 											System.out.println(bankName);
-										} else if (!isNumericzidai(lines[i+2].split(" ")[0].toString()) && isSelectBank(lines[i+2].split(" ")[lines[i+2].split(" ").length-1])) {
+											setBankInfo(bankName);
+											count++;
+											System.out.println(count);
+										} else if (i<(lines.length-2) && !isNumericzidai(lines[i+2].split(" ")[0].toString()) && isSelectBank(lines[i+2].split(" ")[lines[i+2].split(" ").length-1])) {
+											bankName = bankInfos[1].toString();
 											System.out.println(bankName);
-										} else if (!isNumericzidai(lines[i+3].split(" ")[0].toString()) && isSelectBank(lines[i+3].split(" ")[lines[i+3].split(" ").length-1])) {
+											setBankInfo(bankName);
+											count++;
+											System.out.println(count);
+										} else if (i<(lines.length-3) && !isNumericzidai(lines[i+3].split(" ")[0].toString()) && isSelectBank(lines[i+3].split(" ")[lines[i+3].split(" ").length-1])) {
+											bankName = bankInfos[1].toString();
 											System.out.println(bankName);
-										} else if (!isNumericzidai(lines[i+4].split(" ")[0].toString()) && isSelectBank(lines[i+4].split(" ")[lines[i+4].split(" ").length-1])) {
+											setBankInfo(bankName);
+											count++;
+											System.out.println(count);
+										} else if (i<(lines.length-4) && !isNumericzidai(lines[i+4].split(" ")[0].toString()) && isSelectBank(lines[i+4].split(" ")[lines[i+4].split(" ").length-1])) {
+											bankName = bankInfos[1].toString();
 											System.out.println(bankName);
+											setBankInfo(bankName);
+											count++;
+											System.out.println(count);
 										} 
 									}
 								}
 							}
-							System.out.println(count);
+							//------------------------TODO-------------------------
+							result = count;
 						}
 					}
 				}
@@ -197,5 +219,10 @@ public class BankMessageServiceImpl implements BankMessageService{
 			return true;
 		}
 		return false;
+	}
+
+	private int setBankInfo(String bankName){
+		int result = -1;
+		return result;
 	}
 }
