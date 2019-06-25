@@ -15,7 +15,7 @@ public class GetBankUrlUtil {
 
 	public static String getBankUrl(String bankName) {
 		String result = "";
-		String url = getResult(1, bankName);
+		String url = getResult(1, bankName+"官网");
 		if (!StringUtils.isEmpty(url)) {
 			result = url;
 		}
@@ -33,29 +33,47 @@ public class GetBankUrlUtil {
 			for (int i = 1; i < (num + 1); i++) {
 				Element result = element.getElementById(String.valueOf(i));
 				Elements add = result.select("a");
-//				System.out.println(add.first().text());
-				attr = add.first().attr("href");
-				if (attr.equals("")) {
-					for (int k = 0; k < add.size(); k++) {
-						if (k == 1) {
-							attr = add.text().toString().split(" ")[2].toString();
-							System.out.println(attr);
-						}
+//				attr = add.text().toString().split(" ")[1].toString();
+				String[] attrs = add.text().toString().split(" ");
+				for(int k=0; k<attrs.length; k++){
+					if(attrs[k].toString().indexOf("www") != -1){
+						attr = attrs[k].toString();
 					}
 				}
-				if(attr.toString().indexOf(".com.cn") != -1 || attr.toString().indexOf(".com") != -1 || attr.toString().indexOf(".cn") != -1){
-					BANKURL = attr;
-				} else {
-					BANKURL = getRealUrlFromBaiduUrl(attr);
-				}
-//				System.out.println(getRealUrlFromBaiduUrl(attr));
-//				System.out.println();
+//				System.out.println(add.first().text());
+//				attr = add.first().attr("href");
+				
+				
+//				if (attr.equals("")) {
+//					for (int k = 0; k < add.size(); k++) {
+//						if (k == 1) {
+////							attr = add.text().toString().split(" ")[2].toString();
+//							BANKURL = add.text().toString().split(" ")[2].toString();
+//							System.out.println(BANKURL);
+//						}
+//					}
+//				}
+////				else if (getRightAttr(attr)) {
+////					BANKURL = attr;
+////				} 
+//				else {
+//					BANKURL = getRealUrlFromBaiduUrl(attr);
+//				}
+////				if(attr.toString().indexOf(".com.cn") != -1 || attr.toString().indexOf(".com") != -1 || attr.toString().indexOf(".cn") != -1){
+////					BANKURL = attr;
+////				} else {
+//					
+////				}
+////				System.out.println(getRealUrlFromBaiduUrl(attr));
+////				System.out.println();
+				
+				
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
-		return BANKURL;
+		return attr;
 	}
 
 	private static String getResult(int num, String question) {
