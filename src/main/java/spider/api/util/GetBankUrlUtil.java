@@ -2,7 +2,6 @@ package spider.api.util;
 
 import java.net.URLEncoder;
 
-import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -25,7 +24,7 @@ public class GetBankUrlUtil {
 
 	private static String getNews(String url, int num) {
 		String attr = "";
-		String BANKURL = "";
+//		String BANKURL = "";
 		try {
 			Document doc = Jsoup.connect(url).get();
 			Element element = doc.getElementById("content_left");
@@ -91,19 +90,19 @@ public class GetBankUrlUtil {
 		return url;
 	}
 
-	private static String getRealUrlFromBaiduUrl(String url) {
-		Connection.Response res = null;
-		int itimeout = 60000;
-		String bankURL = "";
-		try {
-			res = Jsoup.connect(url).timeout(itimeout).method(Connection.Method.GET).followRedirects(false).execute();
-			if(StringUtils.isEmpty(res.header("Location").toString())){
-				bankURL = res.header("Location").toString();
-			}
-			return res.header("Location").toString();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return bankURL;
-	}
+//	private static String getRealUrlFromBaiduUrl(String url) {
+//		Connection.Response res = null;
+//		int itimeout = 60000;
+//		String bankURL = "";
+//		try {
+//			res = Jsoup.connect(url).timeout(itimeout).method(Connection.Method.GET).followRedirects(false).execute();
+//			if(StringUtils.isEmpty(res.header("Location").toString())){
+//				bankURL = res.header("Location").toString();
+//			}
+//			return res.header("Location").toString();
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//		return bankURL;
+//	}
 }
