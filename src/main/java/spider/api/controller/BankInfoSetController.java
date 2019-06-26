@@ -6,8 +6,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import spider.api.ErrorMessage;
+import spider.api.model.ResultModel;
 import spider.api.model.UpdateModel;
 import spider.api.service.BankInfoSetService;
+import spider.api.util.GetBankInfoUtil;
 
 @RestController
 @RequestMapping(value = BankInfoSetController.VIEW_INITIAL)
@@ -25,8 +27,9 @@ public class BankInfoSetController {
 	}
 
 	@RequestMapping(value = "/SetBankInfo", method = RequestMethod.POST)
-	public UpdateModel setBankInfo(){
-		UpdateModel model = new UpdateModel();
+	public ResultModel setBankInfo(){
+		ResultModel model = new ResultModel();
+//		model = GetBankInfoUtil.setBankSavings("南京银行股份有限公司", "http://www.njcb.com.cn");
 		int result = -1;
 		result = bankInfoSetService.setBankInfo();
 		if(result > 0){
