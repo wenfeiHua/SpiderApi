@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
@@ -14,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import spider.api.model.BankSavingsModel;
 import spider.api.model.BankUrlModel;
 import spider.api.mybatis.mapper.BankInfoMapper;
 import spider.api.mybatis.mapper.BanksavingsInfoMapper;
@@ -22,6 +22,8 @@ import spider.api.mybatis.model.BanksavingsInfo;
 import spider.api.service.BankInfoSetService;
 @Service
 public class BankInfoSetServiceImpl implements BankInfoSetService{
+
+//	public String staticURL = "";
 
 	@Autowired
 	BankInfoMapper bankInfoMapper;
@@ -32,26 +34,27 @@ public class BankInfoSetServiceImpl implements BankInfoSetService{
 	@Override
 	public int setBankInfo() {
 		int result = -1;
-//		List<BankUrlModel> list = new ArrayList<BankUrlModel>();
-//		list = bankInfoMapper.selectBankNameAndUrl();
-//		if(list.size() > 0){
-//			for (BankUrlModel model : list) {
-//				if(!StringUtils.isEmpty(model.getBankname()) && !StringUtils.isEmpty(model.getBankurl())){
-//					String bankName = model.getBankname();
-//					String bankUrl = model.getBankurl();
-//					System.out.println(bankName+"----------------------------------------------------------------------------------------");
-					String bankName = "中国光大银行股份有限公司";
-					String bankUrl = "www.cebbank.com/ ";
+		String staticURL = "";
+		List<BankUrlModel> list = new ArrayList<BankUrlModel>();
+		list = bankInfoMapper.selectBankNameAndUrl();
+		if(list.size() > 0){
+			for (BankUrlModel model : list) {
+				if(!StringUtils.isEmpty(model.getBankname()) && !StringUtils.isEmpty(model.getBankurl())){
+					String bankName = model.getBankname();
+					String bankUrl = model.getBankurl();
+					System.out.println(bankName+"----------------------------------------------------------------------------------------");
+//					String bankName = "中国农业银行股份有限公司";
+//					String bankUrl = "www.abchina.com/ ";
 					if(bankUrl.indexOf("//") == -1){
-						bankUrl = "http://"+bankUrl.trim().substring(0, bankUrl.length()-1);
-						result = setbankinfo(bankName,bankUrl);
+						bankUrl = "http://"+bankUrl.trim().substring(0, bankUrl.length()-2);
+						result = setbankinfo(staticURL,bankName,bankUrl);
 					} else {
 						bankUrl = bankUrl.trim();
-						result = setbankinfo(bankName,bankUrl);
+						result = setbankinfo(staticURL,bankName,bankUrl);
 					}
-//				}
-//			}
-//		}
+				}
+			}
+		}
 		return result;
 	}
 
@@ -77,8 +80,9 @@ public class BankInfoSetServiceImpl implements BankInfoSetService{
 //		return result;
 //	}
 	
-	private int setbankinfo(String name,String url){
+	private int setbankinfo(String staticURL,String name,String url){
 		Connection connect = Jsoup.connect(url);
+		connect.timeout(4000); 
 		Document document = null;
 		int result = -1;
 		try {
@@ -97,17 +101,20 @@ public class BankInfoSetServiceImpl implements BankInfoSetService{
 							}
 						} 
 //						else {
-//							String urls = getUrl(taga.attr("href"));
-//							if(!StringUtils.isEmpty(urls)){
-//								savingsModel = getInfo(urls);
-//								if(savingsModel.size() > 0){
-//									model.setResult(1);
-//									model.setBaseModelList(savingsModel);
+//							if(!StringUtils.isEmpty(taga.attr("href")) && taga.attr("href").indexOf(url) == -1){
+//								String urls = getUrl(staticURL,url,url+taga.attr("href"));
+//								if(!StringUtils.isEmpty(urls) && urls.indexOf(url) == -1){
+//									result = setInfo(name,url+urls);
+//								} else if (!StringUtils.isEmpty(urls) && urls.indexOf(url) != -1) {
+//									result = setInfo(name,urls);
 //								}
-//							} else {
-//								model.setResult(0);
-//								model.setErrCode(ErrorMessage.ERROR_CODE001);
-//								model.setErrDetail(ErrorMessage.ERROE_DETAIL001);
+//							} else if (!StringUtils.isEmpty(taga.attr("href")) && taga.attr("href").indexOf(url) != -1) {
+//								String urls = getUrl(staticURL,url,taga.attr("href"));
+//								if(!StringUtils.isEmpty(urls) && urls.indexOf(url) == -1){
+//									result = setInfo(name,url+urls);
+//								} else if (!StringUtils.isEmpty(urls) && urls.indexOf(url) != -1) {
+//									result = setInfo(name,urls);
+//								}
 //							}
 //						}
 					}
@@ -127,6 +134,8 @@ public class BankInfoSetServiceImpl implements BankInfoSetService{
 		Document document = null;
 		int result = -1;
 		Date sysDate = new Date();
+		Pattern pattern = Pattern.compile("^[-\\+]?[.\\d]*$");
+
 		try {
 			document = connect.get();
 			Elements trs = document.getElementsByTag("table").select("tr");
@@ -136,37 +145,155 @@ public class BankInfoSetServiceImpl implements BankInfoSetService{
 			record.setUpdatetime(sysDate);
 			record.setIsdelete(false);
 			for(Element tr: trs){
-				if(tr.text().toString().indexOf("活期") != -1 || tr.text().toString().indexOf("活期存款") != -1 && StringUtils.isEmpty(record.getDemanddeposit())){
-					System.out.println(tr.text().toString().split(" ")[1].toString());
-					record.setDemanddeposit(Float.parseFloat(tr.text().toString().split(" ")[1].toString()));
+				String spanTR = tr.select("span").text().toString();
+				String divTR = tr.select("div").text().toString();
+				String pTR = tr.select("p").text().toString();
+				String TR = tr.text().toString();
+
+				if (StringUtils.isEmpty(record.getDemanddeposit())) {
+					if(TR.indexOf("活期") != -1 || TR.indexOf("活期存款") != -1){
+						if(!StringUtils.isEmpty(pTR) && pattern.matcher(pTR.split(" ")[pTR.split(" ").length-1].toString()).matches()){
+							System.out.println(pTR.split(" ")[pTR.split(" ").length-1].toString());
+							record.setDemanddeposit(Float.parseFloat(pTR.split(" ")[pTR.split(" ").length-1].toString()));
+						} else if(!StringUtils.isEmpty(spanTR) && pattern.matcher(spanTR.split(" ")[spanTR.split(" ").length-1].toString()).matches()){
+							System.out.println(spanTR.split(" ")[spanTR.split(" ").length-1].toString());
+							record.setDemanddeposit(Float.parseFloat(spanTR.split(" ")[spanTR.split(" ").length-1].toString()));
+						} else if(!StringUtils.isEmpty(divTR) && pattern.matcher(divTR.split(" ")[divTR.split(" ").length-1].toString()).matches()){
+							System.out.println(divTR.split(" ")[divTR.split(" ").length-1].toString());
+							record.setDemanddeposit(Float.parseFloat(divTR.split(" ")[divTR.split(" ").length-1].toString()));
+						} else if (!StringUtils.isEmpty(TR) && pattern.matcher(TR.split(" ")[TR.split(" ").length-1].toString()).matches()) {
+							System.out.println(TR.split(" ")[TR.split(" ").length-1].toString());
+							record.setDemanddeposit(Float.parseFloat(TR.split(" ")[TR.split(" ").length-1].toString()));
+						}
+					}
 				}
-				if(tr.text().toString().indexOf("三个月") != -1 && record.getThreemonths() == null){
-					System.out.println(tr.text().toString().split(" ")[1].toString());
-					record.setThreemonths(Float.parseFloat(tr.text().toString().split(" ")[1].toString()));
+				if (record.getThreemonths() == null) {
+					if(TR.indexOf("三个月") != -1){
+						if(!StringUtils.isEmpty(pTR) && pattern.matcher(pTR.split(" ")[pTR.split(" ").length-1].toString()).matches()){
+							System.out.println(pTR.split(" ")[pTR.split(" ").length-1].toString());
+							record.setThreemonths(Float.parseFloat(pTR.split(" ")[pTR.split(" ").length-1].toString()));
+						} else if (!StringUtils.isEmpty(spanTR) && pattern.matcher(spanTR.split(" ")[spanTR.split(" ").length-1].toString()).matches()) {
+							System.out.println(spanTR.split(" ")[spanTR.split(" ").length-1].toString());
+							record.setThreemonths(Float.parseFloat(spanTR.split(" ")[spanTR.split(" ").length-1].toString()));
+						} else if(!StringUtils.isEmpty(divTR) && pattern.matcher(divTR.split(" ")[divTR.split(" ").length-1].toString()).matches()){
+							System.out.println(divTR.split(" ")[divTR.split(" ").length-1].toString());
+							record.setThreemonths(Float.parseFloat(divTR.split(" ")[divTR.split(" ").length-1].toString()));
+						} else if (!StringUtils.isEmpty(TR) && pattern.matcher(TR.split(" ")[TR.split(" ").length-1].toString()).matches()) {
+							System.out.println(TR.split(" ")[TR.split(" ").length-1].toString());
+							record.setThreemonths(Float.parseFloat(TR.split(" ")[TR.split(" ").length-1].toString()));
+						}
+					}
 				}
-				if(tr.text().toString().indexOf("一年") != -1 && record.getOneyear() == null){
-					System.out.println(tr.text().toString().split(" ")[1].toString());
-					record.setOneyear(Float.parseFloat(tr.text().toString().split(" ")[1].toString()));
+				if (record.getOneyear() == null) {
+					if(TR.indexOf("一年") != -1){
+						if(!StringUtils.isEmpty(pTR) && pattern.matcher(pTR.split(" ")[pTR.split(" ").length-1].toString()).matches()){
+							System.out.println(pTR.split(" ")[pTR.split(" ").length-1].toString());
+							record.setOneyear(Float.parseFloat(pTR.split(" ")[pTR.split(" ").length-1].toString()));
+						} else if (!StringUtils.isEmpty(spanTR) && pattern.matcher(spanTR.split(" ")[spanTR.split(" ").length-1].toString()).matches()) {
+							System.out.println(spanTR.split(" ")[spanTR.split(" ").length-1].toString());
+							record.setOneyear(Float.parseFloat(spanTR.split(" ")[spanTR.split(" ").length-1].toString()));
+						} else if(!StringUtils.isEmpty(divTR) && pattern.matcher(divTR.split(" ")[divTR.split(" ").length-1].toString()).matches()){
+							System.out.println(divTR.split(" ")[divTR.split(" ").length-1].toString());
+							record.setOneyear(Float.parseFloat(divTR.split(" ")[divTR.split(" ").length-1].toString()));
+						} else if (!StringUtils.isEmpty(TR) && pattern.matcher(TR.split(" ")[TR.split(" ").length-1].toString()).matches()) {
+							System.out.println(TR.split(" ")[TR.split(" ").length-1].toString());
+							record.setOneyear(Float.parseFloat(TR.split(" ")[TR.split(" ").length-1].toString()));
+						}
+					}
 				}
-				if(tr.text().toString().indexOf("二年") != -1 && record.getTwoyears() == null){
-					System.out.println(tr.text().toString().split(" ")[1].toString());
-					record.setTwoyears(Float.parseFloat(tr.text().toString().split(" ")[1].toString()));
+				if (record.getTwoyears() == null) {
+					if(TR.indexOf("二年") != -1){
+						if(!StringUtils.isEmpty(pTR) && pattern.matcher(pTR.split(" ")[pTR.split(" ").length-1].toString()).matches()){
+							System.out.println(pTR.split(" ")[pTR.split(" ").length-1].toString());
+							record.setTwoyears(Float.parseFloat(pTR.split(" ")[pTR.split(" ").length-1].toString()));
+						} else if (!StringUtils.isEmpty(spanTR) && pattern.matcher(spanTR.split(" ")[spanTR.split(" ").length-1].toString()).matches()) {
+							System.out.println(spanTR.split(" ")[spanTR.split(" ").length-1].toString());
+							record.setTwoyears(Float.parseFloat(spanTR.split(" ")[spanTR.split(" ").length-1].toString()));
+						} else if(!StringUtils.isEmpty(divTR) && pattern.matcher(divTR.split(" ")[divTR.split(" ").length-1].toString()).matches()){
+							System.out.println(divTR.split(" ")[divTR.split(" ").length-1].toString());
+							record.setTwoyears(Float.parseFloat(divTR.split(" ")[divTR.split(" ").length-1].toString()));
+						} else if (!StringUtils.isEmpty(TR) && pattern.matcher(TR.split(" ")[TR.split(" ").length-1].toString()).matches()) {
+							System.out.println(TR.split(" ")[TR.split(" ").length-1].toString());
+							record.setTwoyears(Float.parseFloat(TR.split(" ")[TR.split(" ").length-1].toString()));
+						}
+					}
 				}
-				if(tr.text().toString().indexOf("三年") != -1 && record.getThreeyears() == null){
-					System.out.println(tr.text().toString().split(" ")[1].toString());
-					record.setThreeyears(Float.parseFloat(tr.text().toString().split(" ")[1].toString()));
+				if (record.getThreeyears() == null) {
+					if(TR.indexOf("三年") != -1){
+						if(!StringUtils.isEmpty(pTR) && pattern.matcher(pTR.split(" ")[pTR.split(" ").length-1].toString()).matches()){
+							System.out.println(pTR.split(" ")[pTR.split(" ").length-1].toString());
+							record.setThreeyears(Float.parseFloat(pTR.split(" ")[pTR.split(" ").length-1].toString()));
+						} else if (!StringUtils.isEmpty(spanTR) && pattern.matcher(spanTR.split(" ")[spanTR.split(" ").length-1].toString()).matches()) {
+							System.out.println(spanTR.split(" ")[spanTR.split(" ").length-1].toString());
+							record.setThreeyears(Float.parseFloat(spanTR.split(" ")[spanTR.split(" ").length-1].toString()));
+						} else if(!StringUtils.isEmpty(divTR) && pattern.matcher(divTR.split(" ")[divTR.split(" ").length-1].toString()).matches()){
+							System.out.println(divTR.split(" ")[divTR.split(" ").length-1].toString());
+							record.setThreeyears(Float.parseFloat(divTR.split(" ")[divTR.split(" ").length-1].toString()));
+						} else if (!StringUtils.isEmpty(TR) && pattern.matcher(TR.split(" ")[TR.split(" ").length-1].toString()).matches()) {
+							System.out.println(TR.split(" ")[TR.split(" ").length-1].toString());
+							record.setThreeyears(Float.parseFloat(TR.split(" ")[TR.split(" ").length-1].toString()));
+						}
+					}
 				}
-				if(tr.text().toString().indexOf("五年") != -1 && record.getFiveyears() == null){
-					System.out.println(tr.text().toString().split(" ")[1].toString());
-					record.setFiveyears(Float.parseFloat(tr.text().toString().split(" ")[1].toString()));
+				if (record.getFiveyears() == null) {
+					if(TR.indexOf("五年") != -1){
+						if(!StringUtils.isEmpty(pTR) && pattern.matcher(pTR.split(" ")[pTR.split(" ").length-1].toString()).matches()){
+							System.out.println(pTR.split(" ")[pTR.split(" ").length-1].toString());
+							record.setFiveyears(Float.parseFloat(pTR.split(" ")[pTR.split(" ").length-1].toString()));
+						} else if (!StringUtils.isEmpty(spanTR) && pattern.matcher(spanTR.split(" ")[spanTR.split(" ").length-1].toString()).matches()) {
+							System.out.println(spanTR.split(" ")[spanTR.split(" ").length-1].toString());
+							record.setFiveyears(Float.parseFloat(spanTR.split(" ")[spanTR.split(" ").length-1].toString()));
+						} else if(!StringUtils.isEmpty(divTR) && pattern.matcher(divTR.split(" ")[divTR.split(" ").length-1].toString()).matches()){
+							System.out.println(divTR.split(" ")[divTR.split(" ").length-1].toString());
+							record.setFiveyears(Float.parseFloat(divTR.split(" ")[divTR.split(" ").length-1].toString()));
+						} else if(!StringUtils.isEmpty(TR) && pattern.matcher(TR.split(" ")[TR.split(" ").length-1].toString()).matches()){
+							System.out.println(TR.split(" ")[TR.split(" ").length-1].toString());
+							record.setFiveyears(Float.parseFloat(TR.split(" ")[TR.split(" ").length-1].toString()));
+						}
+					}
 				}
 			}
-			result = banksavingsInfoMapper.insertSelective(record);
+			if(record.getDemanddeposit() != null){
+				result = banksavingsInfoMapper.insertSelective(record);
+			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
 		return result;
+	}
+
+	//对url再解析得到存款利率的url
+	private String getUrl(String staticURL,String bankURL,String url){
+		String savingURL = "";
+		Connection connect = Jsoup.connect(url);
+		connect.timeout(4000);
+		Document document = null;
+		try {
+			document = connect.get();
+			Elements tagA = document.getElementsByTag("a");
+			if(tagA.size() > 0){
+				for (Element taga : tagA) {
+					if(!staticURL.contains(taga.attr("href"))){
+						if(taga.text().toString().indexOf("存") != -1 && taga.text().toString().indexOf("利率") != -1){
+							savingURL = taga.attr("href");
+						} else {
+							if(!StringUtils.isEmpty(taga.attr("href")) && taga.attr("href").indexOf(url) == -1 && taga.attr("href").indexOf("/") != -1){
+								staticURL += taga.attr("href") + " ";
+								savingURL = getUrl(staticURL,bankURL,bankURL+taga.attr("href"));
+							} else if (!StringUtils.isEmpty(taga.attr("href")) && taga.attr("href").indexOf(url) != -1 && taga.attr("href").indexOf("/") != -1) {
+								staticURL += taga.attr("href") + " ";
+								savingURL = getUrl(staticURL,bankURL,taga.attr("href"));
+							}
+						}
+					}
+				}
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return savingURL;
 	}
 }
