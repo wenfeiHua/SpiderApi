@@ -35,16 +35,16 @@ public class BankInfoSetServiceImpl implements BankInfoSetService{
 	public int setBankInfo() {
 		int result = -1;
 		String staticURL = "";
-		List<BankUrlModel> list = new ArrayList<BankUrlModel>();
-		list = bankInfoMapper.selectBankNameAndUrl();
-		if(list.size() > 0){
-			for (BankUrlModel model : list) {
-				if(!StringUtils.isEmpty(model.getBankname()) && !StringUtils.isEmpty(model.getBankurl())){
-					String bankName = model.getBankname();
-					String bankUrl = model.getBankurl();
-					System.out.println(bankName+"----------------------------------------------------------------------------------------");
-//					String bankName = "中国农业银行股份有限公司";
-//					String bankUrl = "www.abchina.com/ ";
+//		List<BankUrlModel> list = new ArrayList<BankUrlModel>();
+//		list = bankInfoMapper.selectBankNameAndUrl();
+//		if(list.size() > 0){
+//			for (BankUrlModel model : list) {
+//				if(!StringUtils.isEmpty(model.getBankname()) && !StringUtils.isEmpty(model.getBankurl())){
+//					String bankName = model.getBankname();
+//					String bankUrl = model.getBankurl();
+//					System.out.println(bankName+"----------------------------------------------------------------------------------------");
+					String bankName = "齐鲁银行股份有限公司";
+					String bankUrl = "www.hzbank.com.cn/ ";
 					if(bankUrl.indexOf("//") == -1){
 						bankUrl = "http://"+bankUrl.trim().substring(0, bankUrl.length()-2);
 						result = setbankinfo(staticURL,bankName,bankUrl);
@@ -52,9 +52,9 @@ public class BankInfoSetServiceImpl implements BankInfoSetService{
 						bankUrl = bankUrl.trim();
 						result = setbankinfo(staticURL,bankName,bankUrl);
 					}
-				}
-			}
-		}
+//				}
+//			}
+//		}
 		return result;
 	}
 
@@ -94,9 +94,9 @@ public class BankInfoSetServiceImpl implements BankInfoSetService{
 					System.out.println(taga.attr("href"));
 					if(result == -1){
 						if(taga.text().toString().indexOf("存") != -1 && taga.text().toString().indexOf("利率") != -1){
-							if(taga.attr("href").indexOf(url) == -1){
+							if(!StringUtils.isEmpty(taga.attr("href")) && taga.attr("href").indexOf(url) == -1 && taga.attr("href").indexOf("/") != -1){
 								result = setInfo(name,url+taga.attr("href"));
-							} else {
+							} else if (!StringUtils.isEmpty(taga.attr("href")) && taga.attr("href").indexOf(url) != -1 && taga.attr("href").indexOf("/") != -1) {
 								result = setInfo(name,taga.attr("href"));
 							}
 						} 
@@ -145,110 +145,116 @@ public class BankInfoSetServiceImpl implements BankInfoSetService{
 			record.setUpdatetime(sysDate);
 			record.setIsdelete(false);
 			for(Element tr: trs){
+				//存储类型的定位
 				String spanTR = tr.select("span").text().toString();
 				String divTR = tr.select("div").text().toString();
 				String pTR = tr.select("p").text().toString();
 				String TR = tr.text().toString();
-
+				//存储利率的定位
+				String RateSpanTR = tr.select("span").text().toString().split(" ")[tr.select("span").text().toString().split(" ").length-1].toString();
+				String RateDivTR = tr.select("div").text().toString().split(" ")[tr.select("div").text().toString().split(" ").length-1].toString();
+				String RatePTR = tr.select("p").text().toString().split(" ")[tr.select("p").text().toString().split(" ").length-1].toString();
+				String RateTR = tr.text().toString().split(" ")[tr.text().toString().split(" ").length-1].toString();
+				
 				if (StringUtils.isEmpty(record.getDemanddeposit())) {
 					if(TR.indexOf("活期") != -1 || TR.indexOf("活期存款") != -1){
-						if(!StringUtils.isEmpty(pTR) && pattern.matcher(pTR.split(" ")[pTR.split(" ").length-1].toString()).matches()){
-							System.out.println(pTR.split(" ")[pTR.split(" ").length-1].toString());
-							record.setDemanddeposit(Float.parseFloat(pTR.split(" ")[pTR.split(" ").length-1].toString()));
-						} else if(!StringUtils.isEmpty(spanTR) && pattern.matcher(spanTR.split(" ")[spanTR.split(" ").length-1].toString()).matches()){
-							System.out.println(spanTR.split(" ")[spanTR.split(" ").length-1].toString());
-							record.setDemanddeposit(Float.parseFloat(spanTR.split(" ")[spanTR.split(" ").length-1].toString()));
-						} else if(!StringUtils.isEmpty(divTR) && pattern.matcher(divTR.split(" ")[divTR.split(" ").length-1].toString()).matches()){
-							System.out.println(divTR.split(" ")[divTR.split(" ").length-1].toString());
-							record.setDemanddeposit(Float.parseFloat(divTR.split(" ")[divTR.split(" ").length-1].toString()));
-						} else if (!StringUtils.isEmpty(TR) && pattern.matcher(TR.split(" ")[TR.split(" ").length-1].toString()).matches()) {
-							System.out.println(TR.split(" ")[TR.split(" ").length-1].toString());
-							record.setDemanddeposit(Float.parseFloat(TR.split(" ")[TR.split(" ").length-1].toString()));
+						if(!StringUtils.isEmpty(pTR) && pattern.matcher(RatePTR).matches()){
+							System.out.println(RatePTR);
+							record.setDemanddeposit(Float.parseFloat(RatePTR));
+						} else if(!StringUtils.isEmpty(spanTR) && pattern.matcher(RateSpanTR).matches()){
+							System.out.println(RateSpanTR);
+							record.setDemanddeposit(Float.parseFloat(RateSpanTR));
+						} else if(!StringUtils.isEmpty(divTR) && pattern.matcher(RateDivTR).matches()){
+							System.out.println(RateDivTR);
+							record.setDemanddeposit(Float.parseFloat(RateDivTR));
+						} else if (!StringUtils.isEmpty(TR) && pattern.matcher(RateTR).matches()) {
+							System.out.println(RateTR);
+							record.setDemanddeposit(Float.parseFloat(RateTR));
 						}
 					}
 				}
 				if (record.getThreemonths() == null) {
 					if(TR.indexOf("三个月") != -1){
-						if(!StringUtils.isEmpty(pTR) && pattern.matcher(pTR.split(" ")[pTR.split(" ").length-1].toString()).matches()){
-							System.out.println(pTR.split(" ")[pTR.split(" ").length-1].toString());
-							record.setThreemonths(Float.parseFloat(pTR.split(" ")[pTR.split(" ").length-1].toString()));
-						} else if (!StringUtils.isEmpty(spanTR) && pattern.matcher(spanTR.split(" ")[spanTR.split(" ").length-1].toString()).matches()) {
-							System.out.println(spanTR.split(" ")[spanTR.split(" ").length-1].toString());
-							record.setThreemonths(Float.parseFloat(spanTR.split(" ")[spanTR.split(" ").length-1].toString()));
-						} else if(!StringUtils.isEmpty(divTR) && pattern.matcher(divTR.split(" ")[divTR.split(" ").length-1].toString()).matches()){
-							System.out.println(divTR.split(" ")[divTR.split(" ").length-1].toString());
-							record.setThreemonths(Float.parseFloat(divTR.split(" ")[divTR.split(" ").length-1].toString()));
-						} else if (!StringUtils.isEmpty(TR) && pattern.matcher(TR.split(" ")[TR.split(" ").length-1].toString()).matches()) {
-							System.out.println(TR.split(" ")[TR.split(" ").length-1].toString());
-							record.setThreemonths(Float.parseFloat(TR.split(" ")[TR.split(" ").length-1].toString()));
+						if(!StringUtils.isEmpty(pTR) && pattern.matcher(RatePTR).matches()){
+							System.out.println(RatePTR);
+							record.setThreemonths(Float.parseFloat(RatePTR));
+						} else if (!StringUtils.isEmpty(spanTR) && pattern.matcher(RateSpanTR).matches()) {
+							System.out.println(RateSpanTR);
+							record.setThreemonths(Float.parseFloat(RateSpanTR));
+						} else if(!StringUtils.isEmpty(divTR) && pattern.matcher(RateDivTR).matches()){
+							System.out.println(RateDivTR);
+							record.setThreemonths(Float.parseFloat(RateDivTR));
+						} else if (!StringUtils.isEmpty(TR) && pattern.matcher(RateTR).matches()) {
+							System.out.println(RateTR);
+							record.setThreemonths(Float.parseFloat(RateTR));
 						}
 					}
 				}
 				if (record.getOneyear() == null) {
-					if(TR.indexOf("一年") != -1){
-						if(!StringUtils.isEmpty(pTR) && pattern.matcher(pTR.split(" ")[pTR.split(" ").length-1].toString()).matches()){
-							System.out.println(pTR.split(" ")[pTR.split(" ").length-1].toString());
-							record.setOneyear(Float.parseFloat(pTR.split(" ")[pTR.split(" ").length-1].toString()));
-						} else if (!StringUtils.isEmpty(spanTR) && pattern.matcher(spanTR.split(" ")[spanTR.split(" ").length-1].toString()).matches()) {
-							System.out.println(spanTR.split(" ")[spanTR.split(" ").length-1].toString());
-							record.setOneyear(Float.parseFloat(spanTR.split(" ")[spanTR.split(" ").length-1].toString()));
-						} else if(!StringUtils.isEmpty(divTR) && pattern.matcher(divTR.split(" ")[divTR.split(" ").length-1].toString()).matches()){
-							System.out.println(divTR.split(" ")[divTR.split(" ").length-1].toString());
-							record.setOneyear(Float.parseFloat(divTR.split(" ")[divTR.split(" ").length-1].toString()));
-						} else if (!StringUtils.isEmpty(TR) && pattern.matcher(TR.split(" ")[TR.split(" ").length-1].toString()).matches()) {
-							System.out.println(TR.split(" ")[TR.split(" ").length-1].toString());
-							record.setOneyear(Float.parseFloat(TR.split(" ")[TR.split(" ").length-1].toString()));
+					if(TR.indexOf("一年") != -1 || TR.indexOf("一　年") != -1){
+						if(!StringUtils.isEmpty(pTR) && pattern.matcher(RatePTR).matches()){
+							System.out.println(RatePTR);
+							record.setOneyear(Float.parseFloat(RatePTR));
+						} else if (!StringUtils.isEmpty(spanTR) && pattern.matcher(RateSpanTR).matches()) {
+							System.out.println(RateSpanTR);
+							record.setOneyear(Float.parseFloat(RateSpanTR));
+						} else if(!StringUtils.isEmpty(divTR) && pattern.matcher(RateDivTR).matches()){
+							System.out.println(RateDivTR);
+							record.setOneyear(Float.parseFloat(RateDivTR));
+						} else if (!StringUtils.isEmpty(TR) && pattern.matcher(RateTR).matches()) {
+							System.out.println(RateTR);
+							record.setOneyear(Float.parseFloat(RateTR));
 						}
 					}
 				}
 				if (record.getTwoyears() == null) {
-					if(TR.indexOf("二年") != -1){
-						if(!StringUtils.isEmpty(pTR) && pattern.matcher(pTR.split(" ")[pTR.split(" ").length-1].toString()).matches()){
-							System.out.println(pTR.split(" ")[pTR.split(" ").length-1].toString());
-							record.setTwoyears(Float.parseFloat(pTR.split(" ")[pTR.split(" ").length-1].toString()));
-						} else if (!StringUtils.isEmpty(spanTR) && pattern.matcher(spanTR.split(" ")[spanTR.split(" ").length-1].toString()).matches()) {
-							System.out.println(spanTR.split(" ")[spanTR.split(" ").length-1].toString());
-							record.setTwoyears(Float.parseFloat(spanTR.split(" ")[spanTR.split(" ").length-1].toString()));
-						} else if(!StringUtils.isEmpty(divTR) && pattern.matcher(divTR.split(" ")[divTR.split(" ").length-1].toString()).matches()){
-							System.out.println(divTR.split(" ")[divTR.split(" ").length-1].toString());
-							record.setTwoyears(Float.parseFloat(divTR.split(" ")[divTR.split(" ").length-1].toString()));
-						} else if (!StringUtils.isEmpty(TR) && pattern.matcher(TR.split(" ")[TR.split(" ").length-1].toString()).matches()) {
-							System.out.println(TR.split(" ")[TR.split(" ").length-1].toString());
-							record.setTwoyears(Float.parseFloat(TR.split(" ")[TR.split(" ").length-1].toString()));
+					if(TR.indexOf("二年") != -1 || TR.indexOf("二　年") != -1){
+						if(!StringUtils.isEmpty(pTR) && pattern.matcher(RatePTR).matches()){
+							System.out.println(RatePTR);
+							record.setTwoyears(Float.parseFloat(RatePTR));
+						} else if (!StringUtils.isEmpty(spanTR) && pattern.matcher(RateSpanTR).matches()) {
+							System.out.println(RateSpanTR);
+							record.setTwoyears(Float.parseFloat(RateSpanTR));
+						} else if(!StringUtils.isEmpty(divTR) && pattern.matcher(RateDivTR).matches()){
+							System.out.println(RateDivTR);
+							record.setTwoyears(Float.parseFloat(RateDivTR));
+						} else if (!StringUtils.isEmpty(TR) && pattern.matcher(RateTR).matches()) {
+							System.out.println(RateTR);
+							record.setTwoyears(Float.parseFloat(RateTR));
 						}
 					}
 				}
 				if (record.getThreeyears() == null) {
-					if(TR.indexOf("三年") != -1){
-						if(!StringUtils.isEmpty(pTR) && pattern.matcher(pTR.split(" ")[pTR.split(" ").length-1].toString()).matches()){
-							System.out.println(pTR.split(" ")[pTR.split(" ").length-1].toString());
-							record.setThreeyears(Float.parseFloat(pTR.split(" ")[pTR.split(" ").length-1].toString()));
-						} else if (!StringUtils.isEmpty(spanTR) && pattern.matcher(spanTR.split(" ")[spanTR.split(" ").length-1].toString()).matches()) {
-							System.out.println(spanTR.split(" ")[spanTR.split(" ").length-1].toString());
-							record.setThreeyears(Float.parseFloat(spanTR.split(" ")[spanTR.split(" ").length-1].toString()));
-						} else if(!StringUtils.isEmpty(divTR) && pattern.matcher(divTR.split(" ")[divTR.split(" ").length-1].toString()).matches()){
-							System.out.println(divTR.split(" ")[divTR.split(" ").length-1].toString());
-							record.setThreeyears(Float.parseFloat(divTR.split(" ")[divTR.split(" ").length-1].toString()));
-						} else if (!StringUtils.isEmpty(TR) && pattern.matcher(TR.split(" ")[TR.split(" ").length-1].toString()).matches()) {
-							System.out.println(TR.split(" ")[TR.split(" ").length-1].toString());
-							record.setThreeyears(Float.parseFloat(TR.split(" ")[TR.split(" ").length-1].toString()));
+					if(TR.indexOf("三年") != -1 || TR.indexOf("三　年") != -1){
+						if(!StringUtils.isEmpty(pTR) && pattern.matcher(RatePTR).matches()){
+							System.out.println(RatePTR);
+							record.setThreeyears(Float.parseFloat(RatePTR));
+						} else if (!StringUtils.isEmpty(spanTR) && pattern.matcher(RateSpanTR).matches()) {
+							System.out.println(RateSpanTR);
+							record.setThreeyears(Float.parseFloat(RateSpanTR));
+						} else if(!StringUtils.isEmpty(divTR) && pattern.matcher(RateDivTR).matches()){
+							System.out.println(RateDivTR);
+							record.setThreeyears(Float.parseFloat(RateDivTR));
+						} else if (!StringUtils.isEmpty(TR) && pattern.matcher(RateTR).matches()) {
+							System.out.println(RateTR);
+							record.setThreeyears(Float.parseFloat(RateTR));
 						}
 					}
 				}
 				if (record.getFiveyears() == null) {
-					if(TR.indexOf("五年") != -1){
-						if(!StringUtils.isEmpty(pTR) && pattern.matcher(pTR.split(" ")[pTR.split(" ").length-1].toString()).matches()){
-							System.out.println(pTR.split(" ")[pTR.split(" ").length-1].toString());
-							record.setFiveyears(Float.parseFloat(pTR.split(" ")[pTR.split(" ").length-1].toString()));
-						} else if (!StringUtils.isEmpty(spanTR) && pattern.matcher(spanTR.split(" ")[spanTR.split(" ").length-1].toString()).matches()) {
-							System.out.println(spanTR.split(" ")[spanTR.split(" ").length-1].toString());
-							record.setFiveyears(Float.parseFloat(spanTR.split(" ")[spanTR.split(" ").length-1].toString()));
-						} else if(!StringUtils.isEmpty(divTR) && pattern.matcher(divTR.split(" ")[divTR.split(" ").length-1].toString()).matches()){
-							System.out.println(divTR.split(" ")[divTR.split(" ").length-1].toString());
-							record.setFiveyears(Float.parseFloat(divTR.split(" ")[divTR.split(" ").length-1].toString()));
-						} else if(!StringUtils.isEmpty(TR) && pattern.matcher(TR.split(" ")[TR.split(" ").length-1].toString()).matches()){
-							System.out.println(TR.split(" ")[TR.split(" ").length-1].toString());
-							record.setFiveyears(Float.parseFloat(TR.split(" ")[TR.split(" ").length-1].toString()));
+					if(TR.indexOf("五年") != -1 || TR.indexOf("五　年") != -1){
+						if(!StringUtils.isEmpty(pTR) && pattern.matcher(RatePTR).matches()){
+							System.out.println(RatePTR);
+							record.setFiveyears(Float.parseFloat(RatePTR));
+						} else if (!StringUtils.isEmpty(spanTR) && pattern.matcher(RateSpanTR).matches()) {
+							System.out.println(RateSpanTR);
+							record.setFiveyears(Float.parseFloat(RateSpanTR));
+						} else if(!StringUtils.isEmpty(divTR) && pattern.matcher(RateDivTR).matches()){
+							System.out.println(RateDivTR);
+							record.setFiveyears(Float.parseFloat(RateDivTR));
+						} else if(!StringUtils.isEmpty(TR) && pattern.matcher(RateTR).matches()){
+							System.out.println(RateTR);
+							record.setFiveyears(Float.parseFloat(RateTR));
 						}
 					}
 				}
