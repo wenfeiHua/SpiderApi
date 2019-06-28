@@ -79,6 +79,10 @@
 		<result column="bankName" property="bankname" jdbcType="VARCHAR" />
 		<result column="bankURL" property="bankurl" jdbcType="VARCHAR" />
 	</resultMap>
+	<!-- 查询银行名列表 -->
+    <select id="selectBankName" resultMap="BaseResultMap" >
+    select * from bank_info
+   </select>
 	<select id ="selectBankNameAndUrl" resultMap="BankNameAndUrltMap">
 	select bankName,bankURL from bank_info where isDelete = 0
 	</select>

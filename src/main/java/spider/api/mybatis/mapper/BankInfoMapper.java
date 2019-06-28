@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-
+import spider.api.mybatis.model.BankData;
 import spider.api.model.BankUrlModel;
 import spider.api.mybatis.model.BankInfo;
 import spider.api.mybatis.model.BankInfoExample;
@@ -34,4 +34,7 @@ public interface BankInfoMapper {
 	int updateByPrimaryKey(BankInfo record);
 
 	List<BankUrlModel> selectBankNameAndUrl();
+    
+    List<BankInfo> selectBankName();
+
 }

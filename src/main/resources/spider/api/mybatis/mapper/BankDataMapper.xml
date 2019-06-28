@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="spider.api.mybatis.mapper.BankDataMapper">
+	<resultMap id="BaseResultMap"
+		type="spider.api.mybatis.model.BankData">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="bankName" property="bankname" jdbcType="VARCHAR" />
+		<result column="bankUrl" property="bankurl" jdbcType="VARCHAR" />
+		<result column="address" property="address" jdbcType="VARCHAR" />
+		<result column="principal" property="principal" jdbcType="VARCHAR" />
+		<result column="branch" property="branch" jdbcType="VARCHAR" />
+		<result column="createTime" property="createtime" jdbcType="TIMESTAMP" />
+		<result column="updateTime" property="updatetime" jdbcType="TIMESTAMP" />
+		<result column="isDelete" property="isdelete" jdbcType="BIT" />
+	</resultMap>
+	<update id="updateByBankData"  parameterType="spider.api.mybatis.model.BankData">
+	  update bank_data
+		<trim prefix="set" suffixOverrides=",">
+			<if test="id!=null">id=#{id},</if>
+			<if test="bankname!=null">bankName=#{bankname},</if>
+			<if test="bankurl!=null">bankUrl=#{bankurl},</if> 
+			<if test="address!=null">address=#{address},</if>
+			<if test="principal!=null">principal=#{principal},</if>
+			<if test="branch!=null">branch=#{branch},</if>
+			<if test="createtime!=null">createTime=#{createtime},</if>
+			<if test="updatetime!=null">updateTime=#{updatetime},</if>
+			<if test="isdelete!=null">isDelete=#{isdelete}</if>
+		</trim>
+		where bankName=#{bankname}
+	</update>
+</mapper>
